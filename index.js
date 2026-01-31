@@ -15,8 +15,7 @@ const messages = [
 
 // テスト用：アクセスしたらLINEに送る
 app.get("/", async (req, res) => {
-  const message =
-    messages[Math.floor(Math.random() * messages.length)];
+  const message = messages[Math.floor(Math.random() * messages.length)];
 
   try {
     await axios.post(
@@ -26,7 +25,7 @@ app.get("/", async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Bearer ${process.env.LINE_CHANNEL_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${process.env.CHANNEL_ACCESS_TOKEN}`,
           "Content-Type": "application/json"
         }
       }
@@ -36,6 +35,12 @@ app.get("/", async (req, res) => {
     console.error(error.response?.data);
     res.status(500).send("送信エラー");
   }
+});
+
+// Webhook用エンドポイント（LINE公式アカウントからの通知を受ける）
+app.post("/webhook", (req, res) => {
+  console.log("Webhookイベント受信:", req.body); // ログ確認用
+  res.sendStatus(200); // LINEは必ず200を返す必要があります
 });
 
 const port = process.env.PORT || 3000;
